@@ -8,7 +8,7 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   url: 'https://sohail-ai-architect.github.io',
-  baseUrl: '/physical-ai-humanoid-robotics-textbook/',
+  baseUrl: '/',
 
   organizationName: 'Sohail-AI-Architect',
   projectName: 'physical-ai-humanoid-robotics-textbook',
@@ -28,6 +28,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
+          editUrl: 'https://github.com/Sohail-AI-Architect/physical-ai-humanoid-robotics-textbook/edit/main/',
         },
         blog: false,
         theme: {
