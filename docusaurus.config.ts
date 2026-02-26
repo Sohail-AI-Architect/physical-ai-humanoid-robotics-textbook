@@ -28,6 +28,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
+          editUrl: 'https://github.com/Sohail-AI-Architect/physical-ai-humanoid-robotics-textbook/edit/main/',
         },
         blog: false,
         theme: {
