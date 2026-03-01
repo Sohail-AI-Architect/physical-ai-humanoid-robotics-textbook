@@ -1,0 +1,101 @@
+openapi: "3.1.0"
+info:
+  title: RAG Chatbot API — POST /api/index/rebuild
+  version: "1.0.0"
+
+paths:
+  /api/index/rebuild:
+    post:
+      summary: Trigger a full rebuild of the Qdrant vector index
+      operationId: postIndexRebuild
+      description: |
+        Admin endpoint. Re-reads all Docusaurus docs source files, rechunks,
+        re-embeds, and upserts into Qdrant. No authentication required for v1
+        (protected by VPS network boundary; not exposed via public CDN).
+
+        This operation is idempotent — running it multiple times produces the
+        same final index state.
+
+        Long-running: may take 60–300 seconds depending on book size. Returns
+        immediately with a job summary (synchronous in v1; async in future).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dry_run:
+                  type: boolean
+                  default: false
+                  description: If true, count chunks without writing to Qdrant
+      responses:
+        "200":
+          description: Index rebuild completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RebuildResponse"
+              example:
+                status: "completed"
+                chunks_indexed: 3142
+                duration_ms: 47230
+                collection_name: "book_chunks"
+                dry_run: false
+        "409":
+          description: A rebuild is already in progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "REBUILD_IN_PROGRESS"
+                message: "A rebuild is already running. Wait for it to complete."
+                detail: null
+        "500":
+          description: Rebuild failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    RebuildResponse:
+      type: object
+      required:
+        - status
+        - chunks_indexed
+        - duration_ms
+        - collection_name
+        - dry_run
+      properties:
+        status:
+          type: string
+          enum: ["completed", "dry_run_complete"]
+        chunks_indexed:
+          type: integer
+          description: Total number of chunks upserted into Qdrant
+        duration_ms:
+          type: integer
+          description: Wall-clock time for the full rebuild in milliseconds
+        collection_name:
+          type: string
+          description: Name of the Qdrant collection that was rebuilt
+        dry_run:
+          type: boolean
+          description: Whether this was a dry run (no writes performed)
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        detail:
+          type: string
+          nullable: true

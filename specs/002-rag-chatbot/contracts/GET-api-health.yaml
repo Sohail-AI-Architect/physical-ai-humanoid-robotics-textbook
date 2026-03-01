@@ -1,0 +1,61 @@
+openapi: "3.1.0"
+info:
+  title: RAG Chatbot API — GET /api/health
+  version: "1.0.0"
+
+paths:
+  /api/health:
+    get:
+      summary: Health check with index statistics
+      operationId: getHealth
+      description: |
+        Returns service health status and current Qdrant index statistics.
+        Used by Docker healthcheck and monitoring.
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: "ok"
+                index_stats:
+                  total_chunks: 3142
+                  collection_name: "book_chunks"
+        "503":
+          description: Service is degraded (Qdrant or OpenRouter unreachable)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: "degraded"
+                index_stats:
+                  total_chunks: 0
+                  collection_name: "book_chunks"
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - index_stats
+      properties:
+        status:
+          type: string
+          enum: ["ok", "degraded"]
+          description: Overall service health
+        index_stats:
+          type: object
+          required:
+            - total_chunks
+            - collection_name
+          properties:
+            total_chunks:
+              type: integer
+              description: Number of vectors currently in the Qdrant collection
+            collection_name:
+              type: string
+              description: Name of the active Qdrant collection

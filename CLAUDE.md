@@ -208,3 +208,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Python 3.11 (FastAPI backend), TypeScript 5 (Docusaurus frontend plugin) + FastAPI, Uvicorn, qdrant-client, openai (OpenRouter-compatible), tiktoken, langchain-text-splitters, React 18 (Docusaurus v3), react-markdown, react-syntax-highlighter (002-rag-chatbot)
+- Qdrant Cloud Free Tier (vector store, collection `book_chunks`, 1536-dim cosine), browser localStorage (chat sessions, max 10, LRU eviction) (002-rag-chatbot)
+
+## Recent Changes
+- 002-rag-chatbot: Added Python 3.11 (FastAPI backend), TypeScript 5 (Docusaurus frontend plugin) + FastAPI, Uvicorn, qdrant-client, openai (OpenRouter-compatible), tiktoken, langchain-text-splitters, React 18 (Docusaurus v3), react-markdown, react-syntax-highlighter

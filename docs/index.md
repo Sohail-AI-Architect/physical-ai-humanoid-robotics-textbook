@@ -13,6 +13,10 @@ Welcome to the official course textbook for **Physical AI & Humanoid Robotics** 
 university-level, 13-week program designed to take you from foundational AI theory to
 building and deploying autonomous humanoid robot systems.
 
+:::tip 🤖 Ask the AI Assistant
+This textbook has a built-in AI assistant powered by RAG (Retrieval-Augmented Generation). Click the **chat orb** in the bottom-right corner to ask questions about any topic in the book. You can also **highlight any text** on a page and click **✨ Ask about this** to get a targeted explanation.
+:::
+
 ## What You Will Learn
 
 This course bridges the gap between AI software and physical robotic hardware. By the end

@@ -1,0 +1,163 @@
+openapi: "3.1.0"
+info:
+  title: RAG Chatbot API — GET /api/sessions/{session_id}
+  version: "1.0.0"
+
+paths:
+  /api/sessions/{session_id}:
+    get:
+      summary: Retrieve a specific chat session with all turns
+      operationId: getSession
+      description: |
+        Returns the full ChatSession including all turns with answers and citations.
+
+        Note: In v1, sessions are stored client-side in localStorage. This endpoint
+        is included for completeness and future server-side session support.
+        In v1, the frontend reads sessions directly from localStorage; this endpoint
+        may return 404 for all requests unless server-side storage is added in v2.
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID of the session to retrieve
+      responses:
+        "200":
+          description: Session found and returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatSession"
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                title: "What is inverse kinematics?"
+                created_at: "2026-02-27T09:15:00Z"
+                updated_at: "2026-02-27T09:18:30Z"
+                turns:
+                  - id: "7c3b2a10-f84d-4c89-a1d0-3b5f9e2c1a7d"
+                    session_id: "550e8400-e29b-41d4-a716-446655440000"
+                    query: "What is inverse kinematics?"
+                    answer: "Inverse kinematics determines joint angles for a desired pose..."
+                    citations:
+                      - chunk_id: "chapter-04-kinematics-chunk-012"
+                        chapter_title: "Chapter 4: Kinematics"
+                        section_title: "4.3 Inverse Kinematics"
+                        url_fragment: "/docs/chapter-04-kinematics#43-inverse-kinematics"
+                        relevance_score: 0.91
+                    scope: "global"
+                    timestamp: "2026-02-27T09:15:30Z"
+                    latency_ms: 2430
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "SESSION_NOT_FOUND"
+                message: "No session found with the provided ID."
+                detail: null
+
+components:
+  schemas:
+    ChatSession:
+      type: object
+      required:
+        - id
+        - title
+        - created_at
+        - updated_at
+        - turns
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 100
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        turns:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatTurn"
+
+    ChatTurn:
+      type: object
+      required:
+        - id
+        - session_id
+        - query
+        - answer
+        - citations
+        - scope
+        - timestamp
+      properties:
+        id:
+          type: string
+          format: uuid
+        session_id:
+          type: string
+          format: uuid
+        query:
+          type: string
+        answer:
+          type: string
+        citations:
+          type: array
+          maxItems: 3
+          items:
+            $ref: "#/components/schemas/Citation"
+        scope:
+          type: string
+          enum: ["global", "selected_text"]
+        selected_text:
+          type: string
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+        latency_ms:
+          type: integer
+          nullable: true
+
+    Citation:
+      type: object
+      required:
+        - chunk_id
+        - chapter_title
+        - section_title
+        - url_fragment
+        - relevance_score
+      properties:
+        chunk_id:
+          type: string
+        chapter_title:
+          type: string
+        section_title:
+          type: string
+        url_fragment:
+          type: string
+        relevance_score:
+          type: number
+          format: float
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        detail:
+          type: string
+          nullable: true

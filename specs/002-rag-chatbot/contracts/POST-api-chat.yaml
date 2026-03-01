@@ -1,0 +1,176 @@
+openapi: "3.1.0"
+info:
+  title: RAG Chatbot API — POST /api/chat
+  version: "1.0.0"
+
+paths:
+  /api/chat:
+    post:
+      summary: Submit a question and receive a cited answer
+      operationId: postChat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+            examples:
+              global_query:
+                summary: Global book query
+                value:
+                  query: "What is inverse kinematics?"
+                  scope: "global"
+                  session_id: "550e8400-e29b-41d4-a716-446655440000"
+              selected_text_query:
+                summary: Selected text query
+                value:
+                  query: "Can you explain this in simpler terms?"
+                  scope: "selected_text"
+                  selected_text: "The Denavit-Hartenberg convention assigns..."
+                  session_id: null
+      responses:
+        "200":
+          description: Successful answer with citations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+              example:
+                answer: "Inverse kinematics (IK) is the process of determining joint angles given a desired end-effector pose. See [Chapter 4 > 4.3 Inverse Kinematics](/docs/chapter-04-kinematics#43-inverse-kinematics)."
+                citations:
+                  - chunk_id: "chapter-04-kinematics-chunk-012"
+                    chapter_title: "Chapter 4: Kinematics"
+                    section_title: "4.3 Inverse Kinematics"
+                    url_fragment: "/docs/chapter-04-kinematics#43-inverse-kinematics"
+                    relevance_score: 0.91
+                  - chunk_id: "chapter-04-kinematics-chunk-015"
+                    chapter_title: "Chapter 4: Kinematics"
+                    section_title: "4.4 Jacobian Methods"
+                    url_fragment: "/docs/chapter-04-kinematics#44-jacobian-methods"
+                    relevance_score: 0.76
+                session_id: "550e8400-e29b-41d4-a716-446655440000"
+                turn_id: "7c3b2a10-f84d-4c89-a1d0-3b5f9e2c1a7d"
+        "400":
+          description: Invalid request (empty query, invalid scope, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "VALIDATION_ERROR"
+                message: "query must be a non-empty string"
+                detail: null
+        "503":
+          description: Backend service unavailable (OpenRouter or Qdrant unreachable)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "SERVICE_UNAVAILABLE"
+                message: "The answer service is temporarily unavailable. Please try again."
+                detail: "Qdrant connection timeout"
+        "500":
+          description: Unexpected internal error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - query
+        - scope
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: The user's question
+        scope:
+          type: string
+          enum: ["global", "selected_text"]
+          description: Context boundary for this query
+        selected_text:
+          type: string
+          maxLength: 8000
+          nullable: true
+          description: Required when scope is "selected_text"; the highlighted passage
+        session_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Existing session ID to append this turn to; omit or null to create a new session
+
+    ChatResponse:
+      type: object
+      required:
+        - answer
+        - citations
+        - session_id
+        - turn_id
+      properties:
+        answer:
+          type: string
+          description: Markdown-formatted answer grounded in book content
+        citations:
+          type: array
+          maxItems: 3
+          items:
+            $ref: "#/components/schemas/Citation"
+        session_id:
+          type: string
+          format: uuid
+          description: Session ID (new or existing)
+        turn_id:
+          type: string
+          format: uuid
+          description: ID of the newly created turn
+
+    Citation:
+      type: object
+      required:
+        - chunk_id
+        - chapter_title
+        - section_title
+        - url_fragment
+        - relevance_score
+      properties:
+        chunk_id:
+          type: string
+          description: Qdrant point ID of the source chunk
+        chapter_title:
+          type: string
+          description: Full chapter title
+        section_title:
+          type: string
+          description: Section heading nearest to the source chunk
+        url_fragment:
+          type: string
+          description: Docusaurus page path + anchor (e.g. /docs/chapter-04#section)
+        relevance_score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Cosine similarity score
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Machine-readable error code
+        message:
+          type: string
+          description: Human-readable error message safe to display to users
+        detail:
+          type: string
+          nullable: true
+          description: Additional diagnostic detail (omitted in production for 500 errors)
