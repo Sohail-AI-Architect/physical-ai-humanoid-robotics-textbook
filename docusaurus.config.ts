@@ -16,6 +16,10 @@ const config: Config = {
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
+  customFields: {
+    apiBaseUrl: 'http://localhost:8000',
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
