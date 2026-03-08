@@ -8,13 +8,17 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   url: 'https://sohail-ai-architect.github.io',
-  baseUrl: '/physical-ai-humanoid-robotics-textbook/',
+  baseUrl: '/',
 
   organizationName: 'Sohail-AI-Architect',
   projectName: 'physical-ai-humanoid-robotics-textbook',
 
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
+
+  customFields: {
+    apiBaseUrl: 'http://localhost:8000',
+  },
 
   i18n: {
     defaultLocale: 'en',
@@ -27,7 +31,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          routeBasePath: '/',
+          routeBasePath: '/docs',
           editUrl: 'https://github.com/Sohail-AI-Architect/physical-ai-humanoid-robotics-textbook/edit/main/',
         },
         blog: false,
@@ -35,6 +39,24 @@ const config: Config = {
           customCss: './src/css/custom.css',
         },
       } satisfies Preset.Options,
+    ],
+  ],
+
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            from: '/docs/week-1-2-foundations',
+            to: '/docs/intro-physical-ai/week-1-2-foundations',
+          },
+          {
+            from: '/docs/module-1-ros2/week-3-5-ros2-fundamentals',
+            to: '/docs/week-3-5-ros2-fundamentals',
+          },
+        ],
+      },
     ],
   ],
 
@@ -60,14 +82,18 @@ const config: Config = {
           label: 'Course',
         },
         {
-          to: '/hardware-requirements',
+          to: '/docs/hardware-requirements',
           label: 'Hardware',
           position: 'left',
         },
         {
-          to: '/assessments-capstone',
+          to: '/docs/assessments-capstone',
           label: 'Capstone',
           position: 'left',
+        },
+        {
+          type: 'custom-auth',
+          position: 'right',
         },
         {
           href: 'https://github.com/Sohail-AI-Architect/physical-ai-humanoid-robotics-textbook',
@@ -82,18 +108,18 @@ const config: Config = {
         {
           title: 'Course',
           items: [
-            {label: 'Introduction', to: '/intro-physical-ai'},
-            {label: 'Module 1: ROS 2', to: '/module-1-ros2'},
-            {label: 'Module 2: Gazebo & Unity', to: '/module-2-gazebo-unity'},
-            {label: 'Module 3: NVIDIA Isaac', to: '/module-3-nvidia-isaac'},
-            {label: 'Module 4: VLA & Capstone', to: '/module-4-vla-capstone'},
+            {label: 'Introduction', to: '/docs/intro-physical-ai'},
+            {label: 'Module 1: ROS 2', to: '/docs/module-1-ros2'},
+            {label: 'Module 2: Gazebo & Unity', to: '/docs/module-2-gazebo-unity'},
+            {label: 'Module 3: NVIDIA Isaac', to: '/docs/module-3-nvidia-isaac'},
+            {label: 'Module 4: VLA & Capstone', to: '/docs/module-4-vla-capstone'},
           ],
         },
         {
           title: 'Resources',
           items: [
-            {label: 'Hardware Requirements', to: '/hardware-requirements'},
-            {label: 'Assessments & Capstone', to: '/assessments-capstone'},
+            {label: 'Hardware Requirements', to: '/docs/hardware-requirements'},
+            {label: 'Assessments & Capstone', to: '/docs/assessments-capstone'},
           ],
         },
         {
@@ -110,7 +136,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Panaversity. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Panaversity. Built with Docusaurus by Sohail-Nawaz.`,
     },
     prism: {
       theme: prismThemes.github,

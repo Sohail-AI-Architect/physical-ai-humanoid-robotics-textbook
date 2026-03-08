@@ -13,6 +13,10 @@ Welcome to the official course textbook for **Physical AI & Humanoid Robotics** 
 university-level, 13-week program designed to take you from foundational AI theory to
 building and deploying autonomous humanoid robot systems.
 
+:::tip 🤖 Ask the AI Assistant
+This textbook has a built-in AI assistant powered by RAG (Retrieval-Augmented Generation). Click the **chat orb** in the bottom-right corner to ask questions about any topic in the book. You can also **highlight any text** on a page and click **✨ Ask about this** to get a targeted explanation.
+:::
+
 ## What You Will Learn
 
 This course bridges the gap between AI software and physical robotic hardware. By the end
@@ -45,7 +49,7 @@ of this program, you will be able to:
 
 This course supports multiple hardware configurations — from a high-end workstation with
 an RTX 4070 Ti to an affordable Jetson student kit (~$700). See the
-[Hardware Requirements](/hardware-requirements) page for details.
+[Hardware Requirements](/docs/hardware-requirements) page for details.
 
 ## Capstone Project
 
@@ -57,4 +61,4 @@ The final capstone project challenges you to build a fully autonomous humanoid t
 
 ---
 
-[Start Learning → Introduction to Physical AI](/intro-physical-ai)
+[Start Learning → Introduction to Physical AI](/docs/intro-physical-ai)
