@@ -2,6 +2,7 @@
 id: week-3-5-ros2-fundamentals
 title: "Week 3–5: ROS 2 Architecture & Nodes"
 sidebar_position: 2
+slug: /week-3-5-ros2-fundamentals
 ---
 
 # Week 3–5: ROS 2 Architecture, Nodes, Topics, Services & Actions
@@ -157,4 +158,4 @@ def generate_launch_description():
 
 ---
 
-[→ Next Module: Module 2 – The Digital Twin (Gazebo & Unity)](/module-2-gazebo-unity)
+[→ Next Module: Module 2 – The Digital Twin (Gazebo & Unity)](/docs/module-2-gazebo-unity)

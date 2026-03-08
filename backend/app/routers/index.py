@@ -2,12 +2,8 @@ import os
 import time
 from fastapi import APIRouter, BackgroundTasks
 
-try:
-    from backend.app.models.schemas import HealthResponse, IndexRebuildResponse
-    from backend.app.rag.qdrant_client import QdrantService
-except ImportError:
-    from app.models.schemas import HealthResponse, IndexRebuildResponse
-    from app.rag.qdrant_client import QdrantService
+from backend.app.models.schemas import HealthResponse, IndexRebuildResponse
+from backend.app.rag.qdrant_client import QdrantService
 
 router = APIRouter()
 qdrant_service = QdrantService()
@@ -24,10 +20,7 @@ async def health():
 
 
 def _rebuild_index_task(docs_dir: str, collection: str):
-    try:
-        from backend.app.rag.ingest import main as run_ingest
-    except ImportError:
-        from app.rag.ingest import main as run_ingest
+    from backend.app.rag.ingest import main as run_ingest
     start = time.time()
     try:
         chunks = run_ingest(docs_dir, collection)

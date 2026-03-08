@@ -1,44 +1,51 @@
-# Chatbot Backend
+# Physical AI Backend
 
-FastAPI backend for the Physical AI textbook RAG chatbot.
+FastAPI backend for the Physical AI & Humanoid Robotics textbook.
 
 ## Stack
 
 - **FastAPI** — async REST API
 - **Qdrant Cloud** — vector database (Free Tier)
-- **OpenRouter API** — embeddings (`openai/text-embedding-3-small`) + LLM (`google/gemini-flash-1.5`)
+- **Cohere** — embeddings (`embed-english-v3.0`, 1024-dim)
+- **OpenRouter** — LLM (`google/gemini-2.0-flash-001`)
+- **Neon Postgres** — user auth, personalization/translation cache (Step 3)
 - **LangChain text splitters** — chunk docs with 512-token chunks, 50-token overlap
 
 ## Setup
 
 ```bash
 cd backend
-cp .env.example .env
-# Fill in your API keys in .env
 pip install -r requirements.txt
 ```
 
 ## Index the docs
 
 ```bash
-python scripts/index_docs.py --docs-dir ../docs --collection book_chunks
+python -m backend.app.rag.ingest
 ```
 
 ## Run locally
 
 ```bash
-uvicorn main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000
 ```
 
 API available at `http://localhost:8000`. Swagger UI at `http://localhost:8000/docs`.
 
+## Auth Server (Step 3)
+
+Better-Auth runs as a separate Node.js server on port 3001.
+
+```bash
+cd auth-server
+npm install
+npm run dev
+```
+
 ## Deploy with Docker
 
 ```bash
-# Build and start
 docker compose -f ../docker-compose.prod.yml up -d
-
-# Check health
 curl http://localhost:8000/api/health
 ```
 
@@ -46,20 +53,26 @@ curl http://localhost:8000/api/health
 
 | Variable | Description |
 |---|---|
-| `OPENROUTER_API_KEY` | Your OpenRouter API key |
+| `COHERE_API_KEY` | Cohere API key for embeddings |
+| `OPENROUTER_API_KEY` | OpenRouter API key for LLM |
 | `QDRANT_URL` | Qdrant Cloud cluster URL |
 | `QDRANT_API_KEY` | Qdrant Cloud API key |
-| `QDRANT_COLLECTION` | Collection name (default: `book_chunks`) |
-| `EMBEDDING_MODEL` | Embedding model (default: `openai/text-embedding-3-small`) |
-| `LLM_MODEL` | LLM model (default: `google/gemini-flash-1.5`) |
+| `EMBEDDING_MODEL` | Embedding model (default: `embed-english-v3.0`) |
+| `LLM_MODEL` | LLM model (default: `google/gemini-2.0-flash-001`) |
+| `DATABASE_URL` | Neon Postgres connection string (Step 3) |
+| `BETTER_AUTH_SECRET` | Better-Auth session secret (Step 3) |
 
 ## API Endpoints
 
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/health` | Health check + chunk count |
-| `POST` | `/api/chat` | Ask a question, get an answer with citations |
-| `POST` | `/api/index/rebuild` | Trigger background reindex of docs |
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/health` | No | Health check + chunk count |
+| `POST` | `/api/chat` | No | RAG chatbot Q&A with citations |
+| `POST` | `/api/index/rebuild` | No | Trigger background reindex |
+| `POST` | `/api/personalize` | Yes | Personalize chapter for user |
+| `POST` | `/api/translate` | Yes | Translate chapter to Urdu |
+| `GET` | `/api/profile` | Yes | Get user profile |
+| `PUT` | `/api/profile` | Yes | Update user profile |
 
 ### POST /api/chat
 
@@ -71,20 +84,20 @@ curl http://localhost:8000/api/health
 }
 ```
 
-Response:
+### POST /api/personalize (requires Bearer token)
+
 ```json
 {
-  "session_id": "uuid",
-  "turn_id": "uuid",
-  "answer": "Physical AI refers to...",
-  "citations": [
-    {
-      "chunk_id": "...",
-      "chapter_title": "Introduction",
-      "section_title": "What is Physical AI",
-      "url_fragment": "/intro-physical-ai#what-is-physical-ai",
-      "relevance_score": 0.92
-    }
-  ]
+  "chapter_slug": "intro-physical-ai",
+  "chapter_content": "Chapter text..."
+}
+```
+
+### POST /api/translate (requires Bearer token)
+
+```json
+{
+  "chapter_slug": "intro-physical-ai",
+  "chapter_content": "Chapter text..."
 }
 ```

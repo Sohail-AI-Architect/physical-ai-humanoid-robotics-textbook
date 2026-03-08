@@ -1,20 +1,19 @@
 import os
 import re
 import json
+import asyncio
+import logging
 import httpx
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "../../../.env.local"))
 load_dotenv()
 
-try:
-    from backend.app.models.schemas import Citation
-    from backend.app.rag.embeddings import EmbeddingService
-    from backend.app.rag.qdrant_client import QdrantService
-except ImportError:
-    from app.models.schemas import Citation
-    from app.rag.embeddings import EmbeddingService
-    from app.rag.qdrant_client import QdrantService
+from backend.app.models.schemas import Citation
+from backend.app.rag.embeddings import EmbeddingService
+from backend.app.rag.qdrant_client import QdrantService
 
 GREETING_PATTERNS = re.compile(
     r"^(h(ello|i|ey|ola)|salam|assalam|namaste|kaise ho|kya hal|howdy|yo|sup|good (morning|evening|afternoon)|thanks?|thank you|shukriya)\b",
@@ -72,7 +71,7 @@ LLM_ALIASES = {
     "google/gemini-flash-1.5-8b": "google/gemini-2.0-flash-001",
 }
 
-SCORE_THRESHOLD = 0.3
+SCORE_THRESHOLD = 0.2
 
 
 class RAGService:
@@ -94,33 +93,69 @@ class RAGService:
             )
         return "\n\n---\n\n".join(parts)
 
-    def _call_llm(self, messages: list[dict]) -> str:
+    async def _call_llm(self, messages: list[dict], max_retries: int = 3) -> str:
         raw_model = os.getenv("LLM_MODEL", "google/gemini-2.0-flash-001")
         model = LLM_ALIASES.get(raw_model, raw_model)
         api_key = os.getenv("OPENROUTER_API_KEY")
-        resp = httpx.post(
-            f"{OPENROUTER_BASE}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": model,
-                "messages": messages,
-                "temperature": 0.4,
-                "max_tokens": 1024,
-                "response_format": {"type": "json_object"},
-            },
-            timeout=30.0,
-        )
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
+        payload = {
+            "model": model,
+            "messages": messages,
+            "temperature": 0.4,
+            "max_tokens": 1024,
+            "response_format": {"type": "json_object"},
+        }
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
 
-    def answer(self, query: str, scope: str = "global", selected_text: str | None = None) -> tuple[str, list[Citation]]:
+        last_exc: Exception | None = None
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            for attempt in range(max_retries):
+                try:
+                    resp = await client.post(
+                        f"{OPENROUTER_BASE}/chat/completions",
+                        headers=headers,
+                        json=payload,
+                    )
+                    # Retry on transient server errors or rate limits
+                    if resp.status_code in (429, 502, 503, 504):
+                        wait = min(2 ** attempt, 8)
+                        logger.warning("OpenRouter returned %s on attempt %d, retrying in %ds", resp.status_code, attempt + 1, wait)
+                        await asyncio.sleep(wait)
+                        last_exc = httpx.HTTPStatusError(
+                            f"HTTP {resp.status_code}", request=resp.request, response=resp
+                        )
+                        continue
+                    resp.raise_for_status()
+                    data = resp.json()
+                    # Guard against empty/malformed responses
+                    choices = data.get("choices") or []
+                    if not choices:
+                        logger.warning("OpenRouter returned empty choices on attempt %d", attempt + 1)
+                        last_exc = ValueError("Empty choices in LLM response")
+                        await asyncio.sleep(min(2 ** attempt, 8))
+                        continue
+                    return choices[0]["message"]["content"]
+                except httpx.TimeoutException as exc:
+                    logger.warning("OpenRouter timeout on attempt %d: %s", attempt + 1, exc)
+                    last_exc = exc
+                    await asyncio.sleep(min(2 ** attempt, 8))
+                except httpx.HTTPStatusError as exc:
+                    # Non-retryable HTTP errors (4xx except 429)
+                    if exc.response.status_code < 500 and exc.response.status_code != 429:
+                        raise
+                    logger.warning("OpenRouter HTTP error on attempt %d: %s", attempt + 1, exc)
+                    last_exc = exc
+                    await asyncio.sleep(min(2 ** attempt, 8))
+
+        raise last_exc or RuntimeError("LLM call failed after retries")
+
+    async def answer(self, query: str, scope: str = "global", selected_text: str | None = None) -> tuple[str, list[Citation]]:
         # Handle greetings without retrieval
         if self._is_greeting(query):
             try:
-                raw = self._call_llm([
+                raw = await self._call_llm([
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": f"The student said: \"{query}\"\n\nThis is a greeting or casual message. Respond warmly."},
                 ])
@@ -156,7 +191,7 @@ class RAGService:
             user_msg = f"No relevant textbook context was found for this question.\n\nStudent's question: {query}"
 
         try:
-            raw = self._call_llm([
+            raw = await self._call_llm([
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_msg},
             ])

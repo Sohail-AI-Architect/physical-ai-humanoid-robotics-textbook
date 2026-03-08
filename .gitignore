@@ -19,6 +19,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Auth server
+auth-server/node_modules/
+auth-server/dist/
+auth-server/.env
+
+# Root env files with secrets
+.env
+
 # Python backend
 backend/.env
 backend/venv/

@@ -138,4 +138,4 @@ The final capstone demonstrates full autonomous capability:
 
 ---
 
-[→ Hardware Requirements](/hardware-requirements)
+[→ Hardware Requirements](/docs/hardware-requirements)

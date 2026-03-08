@@ -49,7 +49,7 @@ of this program, you will be able to:
 
 This course supports multiple hardware configurations — from a high-end workstation with
 an RTX 4070 Ti to an affordable Jetson student kit (~$700). See the
-[Hardware Requirements](/hardware-requirements) page for details.
+[Hardware Requirements](/docs/hardware-requirements) page for details.
 
 ## Capstone Project
 
@@ -61,4 +61,4 @@ The final capstone project challenges you to build a fully autonomous humanoid t
 
 ---
 
-[Start Learning → Introduction to Physical AI](/intro-physical-ai)
+[Start Learning → Introduction to Physical AI](/docs/intro-physical-ai)

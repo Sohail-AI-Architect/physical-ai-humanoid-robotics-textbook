@@ -127,4 +127,4 @@ nvcc --version
 
 ---
 
-[→ Assessments & Capstone Project](/assessments-capstone)
+[→ Assessments & Capstone Project](/docs/assessments-capstone)
