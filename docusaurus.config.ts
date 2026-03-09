@@ -8,7 +8,7 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   url: 'https://sohail-ai-architect.github.io',
-  baseUrl: '/',
+  baseUrl: '/physical-ai-humanoid-robotics-textbook/',
 
   organizationName: 'Sohail-AI-Architect',
   projectName: 'physical-ai-humanoid-robotics-textbook',
