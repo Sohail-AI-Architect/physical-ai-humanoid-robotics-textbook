@@ -2,6 +2,28 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { AuthContextType, User, Session, SignUpData } from './types';
 
 const AUTH_BASE = 'http://localhost:3001';
+const STORAGE_KEY = 'phy_ai_auth';
+
+function loadPersistedAuth(): { user: User | null; session: Session | null } {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.user && parsed?.session) return parsed;
+    }
+  } catch { /* ignore */ }
+  return { user: null, session: null };
+}
+
+function persistAuth(user: User | null, session: Session | null) {
+  try {
+    if (user && session) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, session }));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch { /* ignore */ }
+}
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -18,9 +40,16 @@ export function useAuth(): AuthContextType {
 }
 
 export default function AuthProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const persisted = loadPersistedAuth();
+  const [user, setUser] = useState<User | null>(persisted.user);
+  const [session, setSession] = useState<Session | null>(persisted.session);
+  const [loading, setLoading] = useState(!persisted.user);
+
+  const updateAuth = useCallback((u: User | null, s: Session | null) => {
+    setUser(u);
+    setSession(s);
+    persistAuth(u, s);
+  }, []);
 
   const refreshSession = useCallback(async () => {
     try {
@@ -30,23 +59,21 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       if (res.ok) {
         const data = await res.json();
         if (data?.user) {
-          setUser(data.user);
-          setSession(data.session);
+          updateAuth(data.user, data.session);
         } else {
-          setUser(null);
-          setSession(null);
+          updateAuth(null, null);
         }
       } else {
-        setUser(null);
-        setSession(null);
+        // Keep persisted state if server is unreachable
+        if (!user) updateAuth(null, null);
       }
     } catch {
-      setUser(null);
-      setSession(null);
+      // Keep persisted state if server is unreachable
+      if (!user) updateAuth(null, null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [updateAuth]);
 
   useEffect(() => {
     refreshSession();
@@ -89,12 +116,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   };
 
   const signOut = async () => {
-    await fetch(`${AUTH_BASE}/api/auth/sign-out`, {
-      method: 'POST',
-      credentials: 'include',
-    });
-    setUser(null);
-    setSession(null);
+    try {
+      await fetch(`${AUTH_BASE}/api/auth/sign-out`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch { /* ignore if server unreachable */ }
+    updateAuth(null, null);
   };
 
   return (

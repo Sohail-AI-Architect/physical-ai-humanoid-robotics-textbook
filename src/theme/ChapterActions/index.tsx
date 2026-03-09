@@ -71,6 +71,8 @@ export default function ChapterActions({ chapterSlug }: ChapterActionsProps): Re
         if (res.ok) {
           const data = await res.json();
           replaceContent(data.urdu_content);
+          const el = articleRef.current || document.querySelector('.markdown');
+          if (el) el.classList.add('urdu-content');
           setIsTranslated(true);
         }
       } catch {
@@ -122,12 +124,16 @@ export default function ChapterActions({ chapterSlug }: ChapterActionsProps): Re
         }}
         onComplete={(content) => {
           replaceContent(content);
+          const el = articleRef.current || document.querySelector('.markdown');
+          if (el) el.classList.add('urdu-content');
           setIsTranslated(true);
           setIsPersonalized(false);
           setProcessing('none');
         }}
         onRevert={() => {
           restoreOriginal();
+          const el = articleRef.current || document.querySelector('.markdown');
+          if (el) el.classList.remove('urdu-content');
           setIsTranslated(false);
         }}
         onError={(msg) => {
