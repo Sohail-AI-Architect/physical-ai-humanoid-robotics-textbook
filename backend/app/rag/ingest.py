@@ -19,12 +19,8 @@ load_dotenv()
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-try:
-    from backend.app.rag.embeddings import EmbeddingService
-    from backend.app.rag.qdrant_client import QdrantService
-except ImportError:
-    from app.rag.embeddings import EmbeddingService
-    from app.rag.qdrant_client import QdrantService
+from backend.app.rag.embeddings import EmbeddingService
+from backend.app.rag.qdrant_client import QdrantService
 
 CHUNK_SIZE = 512
 CHUNK_OVERLAP = 50

@@ -93,4 +93,4 @@ The three pillars of Physical AI:
 
 ---
 
-[→ Next Module: Module 1 – The Robotic Nervous System (ROS 2)](/module-1-ros2)
+[→ Next Module: Module 1 – The Robotic Nervous System (ROS 2)](/docs/module-1-ros2)

@@ -87,4 +87,4 @@ properties:
 
 ---
 
-[→ Next Module: Module 3 – The AI-Robot Brain (NVIDIA Isaac)](/module-3-nvidia-isaac)
+[→ Next Module: Module 3 – The AI-Robot Brain (NVIDIA Isaac)](/docs/module-3-nvidia-isaac)

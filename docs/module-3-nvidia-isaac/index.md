@@ -127,4 +127,4 @@ Key randomization parameters for successful sim-to-real transfer:
 
 ---
 
-[→ Next Module: Module 4 – Vision-Language-Action (VLA)](/module-4-vla-capstone)
+[→ Next Module: Module 4 – Vision-Language-Action (VLA)](/docs/module-4-vla-capstone)

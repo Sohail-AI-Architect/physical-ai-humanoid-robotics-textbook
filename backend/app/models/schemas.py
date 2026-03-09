@@ -52,3 +52,43 @@ class IndexRebuildResponse(BaseModel):
     status: str
     chunks_indexed: int
     duration_ms: float
+
+
+# --- Step 3: Personalize + Translate + Profile ---
+
+class PersonalizeRequest(BaseModel):
+    chapter_slug: str
+    chapter_content: str
+
+
+class PersonalizeResponse(BaseModel):
+    personalized_content: str
+    cached: bool = False
+
+
+class TranslateRequest(BaseModel):
+    chapter_slug: str
+    chapter_content: str
+
+
+class TranslateResponse(BaseModel):
+    urdu_content: str
+    cached: bool = False
+
+
+class UserProfile(BaseModel):
+    name: str
+    email: str
+    softwareBackground: list[str] = []
+    gpuTier: str = "None"
+    ramTier: str = "16GB"
+    hasJetson: bool = False
+    robotPlatform: str = "None"
+
+
+class ProfileUpdateRequest(BaseModel):
+    softwareBackground: Optional[list[str]] = None
+    gpuTier: Optional[str] = None
+    ramTier: Optional[str] = None
+    hasJetson: Optional[bool] = None
+    robotPlatform: Optional[str] = None

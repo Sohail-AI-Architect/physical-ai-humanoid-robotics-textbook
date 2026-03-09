@@ -31,8 +31,8 @@ By the end of Module 1, you will have built a complete ROS 2 workspace with:
 
 ## Topics Covered
 
-- [Week 3–5: ROS 2 Architecture & Fundamentals](./week-3-5-ros2-fundamentals)
+- [Week 3–5: ROS 2 Architecture & Fundamentals](/docs/week-3-5-ros2-fundamentals)
 
 ---
 
-[→ Start: ROS 2 Fundamentals](./week-3-5-ros2-fundamentals)
+[→ Start: ROS 2 Fundamentals](/docs/week-3-5-ros2-fundamentals)

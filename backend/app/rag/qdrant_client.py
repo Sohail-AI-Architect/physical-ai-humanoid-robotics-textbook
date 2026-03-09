@@ -44,14 +44,15 @@ class QdrantService:
     def search(self, query_vector: list[float], limit: int = 5, filter: Filter | None = None) -> list[dict]:
         client = self.get_client()
         collection = os.getenv("QDRANT_COLLECTION", "book_chunks")
-        results = client.search(
+        from qdrant_client.models import QueryResponse
+        results = client.query_points(
             collection_name=collection,
-            query_vector=query_vector,
+            query=query_vector,
             limit=limit,
             query_filter=filter,
             with_payload=True,
         )
-        return [{"id": str(r.id), "score": r.score, "payload": r.payload} for r in results]
+        return [{"id": str(r.id), "score": r.score, "payload": r.payload} for r in results.points]
 
     def count_chunks(self) -> int:
         try:
