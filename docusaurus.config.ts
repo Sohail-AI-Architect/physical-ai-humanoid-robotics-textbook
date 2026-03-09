@@ -8,7 +8,7 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   url: 'https://sohail-ai-architect.github.io',
-  baseUrl: '/',
+  baseUrl: '/physical-ai-humanoid-robotics-textbook/',
 
   organizationName: 'Sohail-AI-Architect',
   projectName: 'physical-ai-humanoid-robotics-textbook',
@@ -52,8 +52,8 @@ const config: Config = {
             to: '/docs/intro-physical-ai/week-1-2-foundations',
           },
           {
-            from: '/docs/module-1-ros2/week-3-5-ros2-fundamentals',
-            to: '/docs/week-3-5-ros2-fundamentals',
+            from: '/docs/week-3-5-ros2-fundamentals',
+            to: '/docs/module-1-ros2/week-3-5-ros2-fundamentals',
           },
         ],
       },
