@@ -4,7 +4,24 @@
 
 ## Live Deployment
 
-🌐 **https://Sohail-AI-Architect.github.io/physical-ai-humanoid-robotics-textbook/**
+🌐 **[https://Sohail-AI-Architect.github.io/physical-ai-humanoid-robotics-textbook/](https://Sohail-AI-Architect.github.io/physical-ai-humanoid-robotics-textbook/)**
+
+## Features
+
+- **Interactive Textbook** — 20+ chapters covering Physical AI, Humanoid Robotics, ROS 2, NVIDIA Isaac, and more
+- **RAG Chatbot** — AI-powered Q&A chatbot using Cohere embeddings + OpenRouter Gemini Flash with Qdrant vector store
+- **Authentication & Personalization** — User auth, personalized learning, and Urdu translation support
+- **GitHub Pages Deployment** — Automated CI/CD with `gh-pages` branch
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Book / Frontend | Docusaurus v3 + TypeScript + React 18 + Tailwind CSS |
+| RAG Chatbot | FastAPI + Cohere Embeddings + OpenRouter Gemini Flash + Qdrant Cloud |
+| Backend API | FastAPI + Uvicorn + Python 3.11 |
+| Vector Store | Qdrant Cloud (1536-dim cosine similarity) |
+| Auth & i18n | Firebase Auth + Urdu Translation |
 
 ## Quickstart
 
@@ -14,50 +31,40 @@ npm run start
 # Opens at http://localhost:3000/physical-ai-humanoid-robotics-textbook/
 ```
 
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Book / Frontend | Docusaurus v3 + TypeScript + Tailwind CSS |
-| Chatbot (coming soon) | Custom ChatKit + OpenAI Agents SDK |
-| Backend API (coming soon) | FastAPI + Uvicorn |
-
-Built with ❤️ by [Panaversity](https://panaversity.org)
-
-## Installation
+## Backend (RAG Chatbot)
 
 ```bash
-yarn
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
 ```
-
-## Local Development
-
-```bash
-yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
 ## Build
 
 ```bash
-yarn build
+npm run build
 ```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
 ## Deployment
 
-Using SSH:
-
 ```bash
-USE_SSH=true yarn deploy
+GIT_USER=Sohail-AI-Architect npm run deploy
 ```
 
-Not using SSH:
+## Repository Structure
 
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
+```
+├── docs/              # Textbook chapters (MDX)
+├── src/               # Docusaurus theme & components
+├── backend/           # FastAPI RAG chatbot backend
+├── static/            # Static assets
+└── docusaurus.config.ts
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+## Author
+
+Built by **Sohail Nawaz** ([@Sohail-AI-Architect](https://github.com/Sohail-AI-Architect))
+
+## License
+
+This project is open source.
