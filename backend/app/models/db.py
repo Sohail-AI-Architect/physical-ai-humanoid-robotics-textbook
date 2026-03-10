@@ -1,4 +1,5 @@
 import os
+import ssl
 import asyncpg
 from dotenv import load_dotenv
 
@@ -8,13 +9,29 @@ load_dotenv()
 _pool: asyncpg.Pool | None = None
 
 
+def _get_dsn() -> str:
+    """Return a cleaned DSN suitable for asyncpg."""
+    dsn = os.getenv("DATABASE_URL", "")
+    # asyncpg handles sslmode via the `ssl` parameter, not query string
+    if "?" in dsn:
+        base, query = dsn.split("?", 1)
+        params = [p for p in query.split("&")
+                  if not p.startswith("sslmode=") and not p.startswith("channel_binding=")]
+        dsn = f"{base}?{'&'.join(params)}" if params else base
+    return dsn
+
+
 async def get_pool() -> asyncpg.Pool:
     global _pool
     if _pool is None:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
         _pool = await asyncpg.create_pool(
-            dsn=os.getenv("DATABASE_URL"),
+            dsn=_get_dsn(),
             min_size=1,
             max_size=5,
+            ssl=ctx,
         )
     return _pool
 
