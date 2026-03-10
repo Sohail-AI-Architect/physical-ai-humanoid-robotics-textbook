@@ -101,8 +101,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       throw new Error(err.message || 'Signup failed');
     }
     const body = await res.json().catch(() => null);
-    if (body?.user && body?.session) {
-      updateAuth(body.user, body.session);
+    if (body?.user) {
+      const sessionData = body.session ?? { token: body.token };
+      updateAuth(body.user, sessionData);
     } else {
       await refreshSession();
     }
@@ -120,8 +121,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       throw new Error('Invalid email or password');
     }
     const body = await res.json().catch(() => null);
-    if (body?.user && body?.session) {
-      updateAuth(body.user, body.session);
+    if (body?.user) {
+      const sessionData = body.session ?? { token: body.token };
+      updateAuth(body.user, sessionData);
     } else {
       await refreshSession();
     }
