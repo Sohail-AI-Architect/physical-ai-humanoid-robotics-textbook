@@ -100,7 +100,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       console.error('[AuthProvider] signUp failed:', res.status, res.statusText, err);
       throw new Error(err.message || 'Signup failed');
     }
-    await refreshSession();
+    const body = await res.json().catch(() => null);
+    if (body?.user && body?.session) {
+      updateAuth(body.user, body.session);
+    } else {
+      await refreshSession();
+    }
   };
 
   const signIn = async (email: string, password: string) => {
@@ -114,7 +119,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       console.error('[AuthProvider] signIn failed:', res.status, res.statusText);
       throw new Error('Invalid email or password');
     }
-    await refreshSession();
+    const body = await res.json().catch(() => null);
+    if (body?.user && body?.session) {
+      updateAuth(body.user, body.session);
+    } else {
+      await refreshSession();
+    }
   };
 
   const signOut = async () => {
