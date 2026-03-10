@@ -2,11 +2,27 @@ import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 import type { ChatSession, Citation } from './types';
 
 interface ChatMessagesProps {
   session: ChatSession | null;
+}
+
+function CitationPill({ citation }: { citation: Citation }): React.JSX.Element {
+  // url_fragment from backend is like "/module-1-ros2/week-3-5"
+  // Docusaurus serves docs at /docs/ under the site baseUrl
+  const href = useBaseUrl(`/docs${citation.url_fragment}`);
+  return (
+    <a
+      href={href}
+      className={styles.citationPill}
+      title={`${citation.chapter_title} — ${citation.section_title} (score: ${citation.relevance_score.toFixed(2)})`}
+    >
+      {citation.section_title || citation.chapter_title}
+    </a>
+  );
 }
 
 export function ChatMessages({ session }: ChatMessagesProps): React.JSX.Element {
@@ -78,14 +94,7 @@ export function ChatMessages({ session }: ChatMessagesProps): React.JSX.Element 
                 <span className={styles.citationsLabel}>Sources:</span>
                 <div className={styles.citationPills}>
                   {turn.citations.map((c: Citation) => (
-                    <a
-                      key={c.chunk_id}
-                      href={c.url_fragment}
-                      className={styles.citationPill}
-                      title={`${c.chapter_title} — ${c.section_title} (score: ${c.relevance_score.toFixed(2)})`}
-                    >
-                      {c.section_title || c.chapter_title}
-                    </a>
+                    <CitationPill key={c.chunk_id} citation={c} />
                   ))}
                 </div>
               </div>

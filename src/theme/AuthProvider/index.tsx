@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { AuthContextType, User, Session, SignUpData } from './types';
 
-const AUTH_BASE = 'http://localhost:3001';
+const AUTH_BASE = 'https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space';
 const STORAGE_KEY = 'phy_ai_auth';
 
 function loadPersistedAuth(): { user: User | null; session: Session | null } {
@@ -97,9 +97,16 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
+      console.error('[AuthProvider] signUp failed:', res.status, res.statusText, err);
       throw new Error(err.message || 'Signup failed');
     }
-    await refreshSession();
+    const body = await res.json().catch(() => null);
+    if (body?.user) {
+      const sessionData = body.session ?? { token: body.token };
+      updateAuth(body.user, sessionData);
+    } else {
+      await refreshSession();
+    }
   };
 
   const signIn = async (email: string, password: string) => {
@@ -110,9 +117,16 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
+      console.error('[AuthProvider] signIn failed:', res.status, res.statusText);
       throw new Error('Invalid email or password');
     }
-    await refreshSession();
+    const body = await res.json().catch(() => null);
+    if (body?.user) {
+      const sessionData = body.session ?? { token: body.token };
+      updateAuth(body.user, sessionData);
+    } else {
+      await refreshSession();
+    }
   };
 
   const signOut = async () => {

@@ -45,7 +45,7 @@ export default function ChapterActions({ chapterSlug }: ChapterActionsProps): Re
 
   // Auto-load Urdu if preference exists
   useEffect(() => {
-    if (!user || !session || loading) return;
+    if (loading) return;
     if (!getUrduPref(chapterSlug)) return;
 
     const autoTranslate = async () => {
@@ -86,7 +86,7 @@ export default function ChapterActions({ chapterSlug }: ChapterActionsProps): Re
     return () => clearTimeout(timer);
   }, [chapterSlug, user, session, loading]);
 
-  if (loading || !user) return null;
+  if (loading) return null;
 
   return (
     <div className={styles.container}>

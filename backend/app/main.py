@@ -20,7 +20,13 @@ from backend.app.models.db import init_tables, close_pool
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if os.getenv("DATABASE_URL"):
-        await init_tables()
+        try:
+            await init_tables()
+            print("[DB] Tables initialized successfully")
+        except Exception as e:
+            print(f"[DB] init_tables failed: {e}")
+    else:
+        print("[DB] DATABASE_URL not set, skipping table init")
     yield
     await close_pool()
 
@@ -33,7 +39,9 @@ app = FastAPI(
 )
 
 _allowed_origins = [
+    "https://sohail-ai-architect.github.io",
     "https://Sohail-AI-Architect.github.io",
+    "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]

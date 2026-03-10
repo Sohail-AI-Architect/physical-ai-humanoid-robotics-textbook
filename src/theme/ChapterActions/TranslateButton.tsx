@@ -71,13 +71,16 @@ export default function TranslateButton({
       });
 
       if (!res.ok) {
+        const errBody = await res.text().catch(() => '');
+        console.error('[TranslateButton] translate failed:', res.status, res.statusText, errBody);
         throw new Error('Failed to translate');
       }
 
       const data = await res.json();
       setUrduPref(chapterSlug, true);
       onComplete(data.urdu_content);
-    } catch {
+    } catch (err) {
+      console.error('[TranslateButton] error:', err);
       onError('Service temporarily unavailable. Please try again in a moment.');
     }
   };
