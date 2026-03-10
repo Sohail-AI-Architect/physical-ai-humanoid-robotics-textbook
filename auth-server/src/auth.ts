@@ -3,11 +3,15 @@ import pg from "pg";
 
 const { Pool } = pg;
 
+// Sanitize DATABASE_URL: remove stray backslashes that break connection parsing
+const rawDbUrl = process.env.DATABASE_URL || "";
+const sanitizedDbUrl = rawDbUrl.replace(/\\(?![nrt\\])/g, "");
+
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001",
   database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: true },
+    connectionString: sanitizedDbUrl,
+    ssl: { rejectUnauthorized: false },
   }),
   emailAndPassword: {
     enabled: true,
