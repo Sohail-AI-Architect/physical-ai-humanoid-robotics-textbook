@@ -42,6 +42,7 @@ _allowed_origins = [
     "https://sohail-ai-architect.github.io",
     "https://Sohail-AI-Architect.github.io",
     "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
+    "https://physical-ai-humanoid-robotics-textb-two-zeta.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]

@@ -72,5 +72,6 @@ export const auth = betterAuth({
     "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
     "https://Sohail-AI-Architect.github.io",
     "https://sohail-ai-architect.github.io",
+    "https://physical-ai-humanoid-robotics-textb-two-zeta.vercel.app",
   ],
 });
