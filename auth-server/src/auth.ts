@@ -3,16 +3,31 @@ import pg from "pg";
 
 const { Pool } = pg;
 
-// Sanitize DATABASE_URL: remove stray backslashes that break connection parsing
-const rawDbUrl = process.env.DATABASE_URL || "";
-const sanitizedDbUrl = rawDbUrl.replace(/\\(?![nrt\\])/g, "");
+// Manually construct connection config to avoid DATABASE_URL escape issues
+function buildPoolConfig() {
+  const raw = process.env.DATABASE_URL || "";
+  try {
+    const url = new URL(raw);
+    return {
+      host: url.hostname,
+      port: Number(url.port) || 5432,
+      user: decodeURIComponent(url.username),
+      password: decodeURIComponent(url.password),
+      database: url.pathname.replace(/^\//, ""),
+      ssl: { rejectUnauthorized: false },
+    };
+  } catch (e) {
+    console.error("[auth] Failed to parse DATABASE_URL, falling back to raw string:", e);
+    return {
+      connectionString: raw,
+      ssl: { rejectUnauthorized: false },
+    };
+  }
+}
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001",
-  database: new Pool({
-    connectionString: sanitizedDbUrl,
-    ssl: { rejectUnauthorized: false },
-  }),
+  database: new Pool(buildPoolConfig()),
   emailAndPassword: {
     enabled: true,
   },
