@@ -65,13 +65,17 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: [
-    "http://localhost:3000",
-    "http://localhost:3000/physical-ai-humanoid-robotics-textbook",
-    "http://localhost:8000",
-    "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
-    "https://Sohail-AI-Architect.github.io",
-    "https://sohail-ai-architect.github.io",
-    "https://physical-ai-humanoid-robotics-textb-two-zeta.vercel.app",
-  ],
+  trustedOrigins: (origin) => {
+    const allowed = [
+      "http://localhost:3000",
+      "http://localhost:3000/physical-ai-humanoid-robotics-textbook",
+      "http://localhost:8000",
+      "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
+      "https://Sohail-AI-Architect.github.io",
+      "https://sohail-ai-architect.github.io",
+    ];
+    if (allowed.includes(origin)) return true;
+    if (/^https:\/\/[\w-]+\.vercel\.app$/.test(origin)) return true;
+    return false;
+  },
 });

@@ -42,7 +42,6 @@ _allowed_origins = [
     "https://sohail-ai-architect.github.io",
     "https://Sohail-AI-Architect.github.io",
     "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
-    "https://physical-ai-humanoid-robotics-textb-two-zeta.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
@@ -50,6 +49,7 @@ _allowed_origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
+    allow_origin_regex=r"^https://[\w-]+\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
