@@ -3,7 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const isVercel = process.env.VERCEL === '1';
-const siteUrl = process.env.SITE_URL || (isVercel ? 'https://physical-ai-textbook.vercel.app' : 'https://sohail-ai-architect.github.io');
+const siteUrl = process.env.SITE_URL || (isVercel ? 'https://physical-ai-humanoid-robotics-textb-two-zeta.vercel.app' : 'https://sohail-ai-architect.github.io');
 const baseUrl = process.env.BASE_URL || (isVercel ? '/' : '/physical-ai-humanoid-robotics-textbook/');
 const hfSpacesUrl = 'https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space';
 const apiBaseUrl = process.env.API_BASE_URL || hfSpacesUrl;
