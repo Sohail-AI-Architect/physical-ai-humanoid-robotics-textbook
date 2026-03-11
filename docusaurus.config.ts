@@ -2,13 +2,20 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
+const isVercel = process.env.VERCEL === '1';
+const siteUrl = process.env.SITE_URL || (isVercel ? 'https://physical-ai-textbook.vercel.app' : 'https://sohail-ai-architect.github.io');
+const baseUrl = process.env.BASE_URL || (isVercel ? '/' : '/physical-ai-humanoid-robotics-textbook/');
+const hfSpacesUrl = 'https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space';
+const apiBaseUrl = process.env.API_BASE_URL || hfSpacesUrl;
+const authBaseUrl = process.env.AUTH_BASE_URL || hfSpacesUrl;
+
 const config: Config = {
   title: 'Physical AI & Humanoid Robotics',
   tagline: 'From Digital Brain to Embodied Humanoid Intelligence',
   favicon: 'img/favicon.ico',
 
-  url: 'https://sohail-ai-architect.github.io',
-  baseUrl: '/physical-ai-humanoid-robotics-textbook/',
+  url: siteUrl,
+  baseUrl,
 
   organizationName: 'Sohail-AI-Architect',
   projectName: 'physical-ai-humanoid-robotics-textbook',
@@ -17,7 +24,8 @@ const config: Config = {
   onBrokenMarkdownLinks: 'warn',
 
   customFields: {
-    apiBaseUrl: 'http://localhost:8000',
+    apiBaseUrl,
+    authBaseUrl,
   },
 
   i18n: {

@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { AuthContextType, User, Session, SignUpData } from './types';
+import siteConfig from '@generated/docusaurus.config';
 
-const AUTH_BASE = 'https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space';
+const HF_SPACES_URL = 'https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space';
+const AUTH_BASE: string = (siteConfig.customFields?.authBaseUrl as string) || HF_SPACES_URL;
 const STORAGE_KEY = 'phy_ai_auth';
 
 function loadPersistedAuth(): { user: User | null; session: Session | null } {
