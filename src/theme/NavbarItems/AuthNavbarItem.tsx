@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import { useAuth } from '../AuthProvider';
 import AuthModal from '../AuthForms/AuthModal';
 
@@ -6,6 +7,7 @@ export default function AuthNavbarItem(): React.JSX.Element {
   const { user, loading, signOut } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'signin' | 'signup'>('signin');
+  const profileUrl = useBaseUrl('/profile');
 
   if (loading) {
     return <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>...</span>;
@@ -15,7 +17,7 @@ export default function AuthNavbarItem(): React.JSX.Element {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         <a
-          href="/profile"
+          href={profileUrl}
           style={{
             color: '#c4b5fd',
             fontSize: '0.85rem',
