@@ -17,6 +17,7 @@ app.use(
         "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
         "https://sohail-ai-architect.github.io",
         "https://Sohail-AI-Architect.github.io",
+        "https://physical-ai-humanoid-robotics-textb-two-zeta.vercel.app",
       ];
       if (!origin || allowed.includes(origin) || /^https:\/\/[\w-]+\.vercel\.app$/.test(origin)) {
         callback(null, true);
