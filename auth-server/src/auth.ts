@@ -26,7 +26,7 @@ function buildPoolConfig() {
 }
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001",
+  baseURL: process.env.BETTER_AUTH_URL || "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
   database: new Pool(buildPoolConfig()),
   emailAndPassword: {
     enabled: true,
@@ -65,17 +65,14 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: (origin) => {
-    const allowed = [
-      "http://localhost:3000",
-      "http://localhost:3000/physical-ai-humanoid-robotics-textbook",
-      "http://localhost:8000",
-      "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
-      "https://Sohail-AI-Architect.github.io",
-      "https://sohail-ai-architect.github.io",
-    ];
-    if (allowed.includes(origin)) return true;
-    if (/^https:\/\/[\w-]+\.vercel\.app$/.test(origin)) return true;
-    return false;
-  },
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://localhost:3000/physical-ai-humanoid-robotics-textbook",
+    "http://localhost:8000",
+    "https://iqra-sohail-2025-physical-ai-humanoid-robotics-textbook.hf.space",
+    "https://Sohail-AI-Architect.github.io",
+    "https://sohail-ai-architect.github.io",
+    "https://physical-ai-humanoid-robotics-textb-two-zeta.vercel.app",
+    "https://physical-ai-humanoid-robotics-textbook-eje75v8zu.vercel.app",
+  ],
 });
